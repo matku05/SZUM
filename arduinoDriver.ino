@@ -46,11 +46,12 @@ char dirY = ' ';
 char dirZ = ' ';
 
 long numberOfSteps = 0;
-long numberOfStepsX = 0;
-long numberOfStepsY = 0;
-long numberOfStepsZ = 0;
+long numberOfStepsX = 30000;
+long numberOfStepsY = 30000;
+long numberOfStepsZ = 30000;
 
 bool newCommand = 0;
+bool calibrated = 0;
 
 /************ setup *****************/
 
@@ -178,7 +179,15 @@ void loop() {
           digitalWrite(X_STEP_PIN,HIGH);
 
           // go down another 100 steps after krancowka is released
-          numberOfStepsX = 100;
+          if (!calibrated)
+          {
+            numberOfStepsX = 12000;
+          }
+          else
+          {
+            numberOfStepsX = 2000;
+          }
+
           dirX = 'd';
         }
         
@@ -203,8 +212,16 @@ void loop() {
         {
           digitalWrite(Y_DIR_PIN,HIGH);
           digitalWrite(Y_STEP_PIN,HIGH);
+
+          if (!calibrated)
+          {
+            numberOfStepsY = 12000;
+          }
+          else
+          {
+            numberOfStepsY = 2000;
+          }
           
-          numberOfStepsY = 100;
           dirY = 'd';
         }
         
@@ -230,20 +247,34 @@ void loop() {
         {
           digitalWrite(Z_DIR_PIN,HIGH);
           digitalWrite(Z_STEP_PIN,HIGH);
+
+          if (!calibrated)
+          {
+            numberOfStepsZ = 12000;
+          }
+          else
+          {
+            numberOfStepsZ = 2000;
+          }
           
-          numberOfStepsZ = 100;
           dirZ = 'd';
         }
         
       } 
 
-      delayMicroseconds(400);
+      delayMicroseconds(300);
 
       digitalWrite(X_STEP_PIN,LOW);
       digitalWrite(Y_STEP_PIN,LOW);
       digitalWrite(Z_STEP_PIN,LOW);
     
-      delayMicroseconds(400);
+      delayMicroseconds(300);
+
+      if (numberOfStepsX == 0 && numberOfStepsY == 0 && numberOfStepsZ == 0 && calibrated == 0)
+      {
+        calibrated = 1;
+        Serial.println("OK");
+      }
 
       if (numberOfStepsX == 0 && numberOfStepsY == 0 && numberOfStepsZ == 0 && newCommand == 1)
       {
